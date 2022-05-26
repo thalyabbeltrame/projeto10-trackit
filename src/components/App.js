@@ -9,23 +9,28 @@ import TodayPage from './TodayPage';
 import HistoryPage from './HistoryPage';
 
 import TokenContext from '../hooks/TokenContext';
+import UserContext from '../hooks/UserContext';
 
 function App() {
 	const [token, setToken] = useState('');
+	const [user, setUser] = useState('');
+
 	return (
 		<>
 			<GlobalStyle />
-			<TokenContext.Provider value={{ token, setToken }}>
-				<BrowserRouter>
-					<Routes>
-						<Route path='/' element={<LoginPage />} />
-						<Route path='/cadastro' element={<SignUpPage />} />
-						<Route path='/habitos' element={<HabitsPage />} />
-						<Route path='/hoje' element={<TodayPage />} />
-						<Route path='/historico' element={<HistoryPage />} />
-					</Routes>
-				</BrowserRouter>
-			</TokenContext.Provider>
+			<UserContext.Provider value={{ user, setUser }}>
+				<TokenContext.Provider value={{ token, setToken }}>
+					<BrowserRouter>
+						<Routes>
+							<Route path='/' element={<LoginPage />} />
+							<Route path='/cadastro' element={<SignUpPage />} />
+							<Route path='/habitos' element={<HabitsPage />} />
+							<Route path='/hoje' element={<TodayPage />} />
+							<Route path='/historico' element={<HistoryPage />} />
+						</Routes>
+					</BrowserRouter>
+				</TokenContext.Provider>
+			</UserContext.Provider>
 		</>
 	);
 }

@@ -138,9 +138,9 @@ const GlobalStyle = createGlobalStyle`
   }
 
   body {
-    /* font-family: 'Playball', cursive; */
     font-family: 'Lexend Deca', sans-serif;
     font-weight: 400;
+    background: #f2f2f2;
   }
 
   body::-webkit-scrollbar {

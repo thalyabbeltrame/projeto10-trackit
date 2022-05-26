@@ -7,12 +7,14 @@ import SignUpPage from './SignUpPage';
 import { ThreeDots } from 'react-loader-spinner';
 
 import TokenContext from '../hooks/TokenContext';
+import UserContext from '../hooks/UserContext';
 
 function LoginPage() {
 	const navigate = useNavigate();
 	const [loginInfos, setLoginInfos] = useState({ email: '', password: '' });
 	const [isLoading, setIsLoading] = useState(false);
 	const { setToken } = useContext(TokenContext);
+	const { setUser } = useContext(UserContext);
 
 	const login = (event) => {
 		event.preventDefault();
@@ -21,7 +23,8 @@ function LoginPage() {
 			.post('https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/auth/login', loginInfos)
 			.then((response) => {
 				setToken(response.data.token);
-				navigate('/hoje');
+				setUser(response.data.image);
+				navigate('/habitos');
 			})
 			.catch((error) => {
 				setIsLoading(false);
@@ -77,6 +80,7 @@ const Container = styled.div`
 	align-items: center;
 	justify-content: center;
 	height: 100vh;
+	background: #ffffff;
 `;
 
 const Logo = styled.img`
