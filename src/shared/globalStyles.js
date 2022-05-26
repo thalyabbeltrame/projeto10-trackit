@@ -142,6 +142,10 @@ const GlobalStyle = createGlobalStyle`
     font-family: 'Lexend Deca', sans-serif;
     font-weight: 400;
   }
+
+  body::-webkit-scrollbar {
+    display: none;
+  }
 `;
 
 export default GlobalStyle;
