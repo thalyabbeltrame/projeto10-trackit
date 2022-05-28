@@ -8,7 +8,7 @@ import { IoTrashOutline } from 'react-icons/io5';
 import Header from './Header';
 import Footer from './Footer';
 
-import TokenContext from '../hooks/TokenContext';
+import TokenContext from '../contexts/TokenContext';
 
 function HabitsPage() {
 	const [habits, setHabits] = useState([]);
@@ -18,13 +18,13 @@ function HabitsPage() {
 	const { token } = useContext(TokenContext);
 
 	const daysOfTheWeek = [
+		{ simbol: 'D', index: 0 },
 		{ simbol: 'S', index: 1 },
 		{ simbol: 'T', index: 2 },
 		{ simbol: 'Q', index: 3 },
 		{ simbol: 'Q', index: 4 },
 		{ simbol: 'S', index: 5 },
 		{ simbol: 'S', index: 6 },
-		{ simbol: 'D', index: 7 },
 	];
 
 	const config = {

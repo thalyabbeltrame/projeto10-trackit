@@ -6,8 +6,8 @@ import logo from '../assets/images/logo.png';
 import SignUpPage from './SignUpPage';
 import { ThreeDots } from 'react-loader-spinner';
 
-import TokenContext from '../hooks/TokenContext';
-import UserContext from '../hooks/UserContext';
+import TokenContext from '../contexts/TokenContext';
+import UserContext from '../contexts/UserContext';
 
 function LoginPage() {
 	const navigate = useNavigate();
@@ -24,7 +24,7 @@ function LoginPage() {
 			.then((response) => {
 				setToken(response.data.token);
 				setUser(response.data.image);
-				navigate('/habitos');
+				navigate('/hoje');
 			})
 			.catch((error) => {
 				setIsLoading(false);
