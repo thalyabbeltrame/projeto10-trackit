@@ -27,7 +27,7 @@ function Footer() {
 						background
 						backgroundPadding={6}
 						styles={buildStyles({
-							backgroundColor: '#3e98c7',
+							backgroundColor: '#52b6ff',
 							textColor: '#fff',
 							pathColor: '#fff',
 							trailColor: 'transparent',
@@ -55,6 +55,9 @@ const FooterContainer = styled.footer`
 	bottom: 0;
 	z-index: 1;
 	padding: 0 36px;
+	font-size: 17.976px;
+	line-height: 22px;
+	color: #ffffff;
 
 	p {
 		font-size: 17.976px;

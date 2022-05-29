@@ -1,21 +1,28 @@
 import { useState, useEffect, useContext } from 'react';
+import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import axios from 'axios';
 import { ThreeDots } from 'react-loader-spinner';
 import { IconContext } from 'react-icons/lib';
 import { IoTrashOutline } from 'react-icons/io5';
+import dayjs from 'dayjs';
 
 import Header from './Header';
 import Footer from './Footer';
 
-import TokenContext from '../contexts/TokenContext';
+import UserContext from '../contexts/UserContext';
+import PercentageContext from '../contexts/PercentageContext';
+import DailyHabitsContext from '../contexts/DailyHabitsContext';
 
 function HabitsPage() {
+	const navigate = useNavigate();
 	const [habits, setHabits] = useState([]);
 	const [newHabit, setNewHabit] = useState({ name: '', days: [] });
 	const [isLoading, setIsLoading] = useState(false);
 	const [isHabitCreationBoxOpen, setIsHabitCreationBoxOpen] = useState(false);
-	const { token } = useContext(TokenContext);
+	const { userInfos } = useContext(UserContext);
+	const { dailyHabits, setDailyHabits } = useContext(DailyHabitsContext);
+	const { setPercentage } = useContext(PercentageContext);
 
 	const daysOfTheWeek = [
 		{ simbol: 'D', index: 0 },
@@ -27,20 +34,28 @@ function HabitsPage() {
 		{ simbol: 'S', index: 6 },
 	];
 
+	const weekdayNumber = dayjs().locale('pt-br').format('d');
+
 	const config = {
 		headers: {
-			Authorization: `Bearer ${token}`,
+			Authorization: `Bearer ${userInfos.token}`,
 		},
 	};
 
 	useEffect(() => {
-		axios.get('https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/habits', config).then((response) => {
-			setHabits(response.data);
-		});
+		const API = 'https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/habits';
+
+		axios
+			.get(API, config)
+			.then((response) => {
+				setHabits(response.data);
+			})
+			.catch(() => navigate('/'));
 	}, []);
 
 	const selectUnselectDay = (dayIndex) => {
-		if (newHabit.days.some((day) => day.index === dayIndex)) {
+		const isDaySelected = newHabit.days.some((day) => day.index === dayIndex);
+		if (isDaySelected) {
 			setNewHabit({ ...newHabit, days: newHabit.days.filter((day) => day.index !== dayIndex) });
 		} else {
 			setNewHabit({ ...newHabit, days: [...newHabit.days, { index: dayIndex }] });
@@ -49,22 +64,26 @@ function HabitsPage() {
 
 	const saveNewHabit = () => {
 		if (newHabit.name.trim() === '' || newHabit.days.length === 0) return;
-
 		setIsLoading(true);
 
-		const request = {
+		const body = {
 			name: newHabit.name,
 			days: newHabit.days.map((day) => day.index),
 		};
 
-		axios
-			.post('https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/habits', request, config)
-			.then((response) => {
-				setHabits([...habits, response.data]);
-				setIsLoading(false);
-				setIsHabitCreationBoxOpen(false);
-				setNewHabit({ name: '', days: [] });
-			});
+		const API = 'https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/habits';
+
+		axios.post(API, body, config).then((response) => {
+			setHabits([...habits, response.data]);
+			setIsLoading(false);
+			setIsHabitCreationBoxOpen(false);
+			setNewHabit({ name: '', days: [] });
+
+			const isNewDailyHabit = newHabit.days.some((day) => day.index === Number(weekdayNumber));
+			if (isNewDailyHabit) setDailyHabits([...dailyHabits, response.data]);
+
+			setPercentage(([...dailyHabits.filter((dailyHabit) => dailyHabit.done)].length / dailyHabits.length) * 100);
+		});
 	};
 
 	const deleteHabit = (habitId) => {
@@ -72,6 +91,10 @@ function HabitsPage() {
 			.delete(`https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/habits/${habitId}`, config)
 			.then(() => {
 				setHabits(habits.filter((habit) => habit.id !== habitId));
+				setDailyHabits([...dailyHabits.filter((dailyHabit) => dailyHabit.id !== habitId)]);
+				setPercentage(
+					([...dailyHabits.filter((dailyHabit) => dailyHabit.done)].length / dailyHabits.length) * 100
+				);
 			});
 	};
 

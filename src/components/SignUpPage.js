@@ -3,8 +3,9 @@ import { useState } from 'react';
 import styled from 'styled-components';
 import axios from 'axios';
 import logo from '../assets/images/logo.png';
-import LoginPage from './LoginPage';
 import { ThreeDots } from 'react-loader-spinner';
+
+import LoginPage from './SignInPage';
 
 function SignUpPage() {
 	const navigate = useNavigate();
@@ -18,19 +19,29 @@ function SignUpPage() {
 
 	const signUp = (event) => {
 		event.preventDefault();
-		setIsLoading(true);
-		axios
-			.post('https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/auth/sign-up', signUpInfos)
-			.then(() => navigate('/'))
-			.catch(() => {
-				setIsLoading(false);
-				alert('Aconteceu um erro inesperado e seus dados não foram enviados com sucesso!');
-			});
+		if (isImageValid(signUpInfos.image)) {
+			setIsLoading(true);
+			axios
+				.post('https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/auth/sign-up', signUpInfos)
+				.then(() => navigate('/'))
+				.catch(() => {
+					setIsLoading(false);
+					alert('Aconteceu um erro inesperado e seus dados não foram enviados com sucesso!');
+				});
+		} else {
+			alert('URL da imagem inválida. Por favor, insira outra!');
+		}
 	};
 
 	const handleInputChange = (event) => {
 		setSignUpInfos({ ...signUpInfos, [event.target.name]: event.target.value });
 	};
+
+	const isImageValid = (imageURL) =>
+		(imageURL.startsWith('http://') || imageURL.startsWith('https://')) &&
+		imageURL.match(
+			/(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_+.~#?&//=]*)/g
+		);
 
 	return (
 		<Container>

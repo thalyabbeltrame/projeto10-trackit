@@ -1,84 +1,82 @@
-import { useState, useEffect, useContext } from 'react';
+import { useEffect, useContext } from 'react';
+import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import axios from 'axios';
-import * as dayjs from 'dayjs';
+import dayjs from 'dayjs';
+import 'dayjs/locale/pt-br';
 import { IconContext } from 'react-icons/lib';
 import { BsCheckLg } from 'react-icons/bs';
 
 import Header from './Header';
 import Footer from './Footer';
 
-import TokenContext from '../contexts/TokenContext';
 import PercentageContext from '../contexts/PercentageContext';
+import UserContext from '../contexts/UserContext';
+import DailyHabitsContext from '../contexts/DailyHabitsContext';
 
 function TodayPage() {
-	const [dailyHabits, setDailyHabits] = useState([]);
-	const { token } = useContext(TokenContext);
+	const navigate = useNavigate();
+	const { dailyHabits, setDailyHabits } = useContext(DailyHabitsContext);
 	const { percentage, setPercentage } = useContext(PercentageContext);
+	const { userInfos } = useContext(UserContext);
 
 	const config = {
 		headers: {
-			Authorization: `Bearer ${token}`,
+			Authorization: `Bearer ${userInfos.token}`,
 		},
 	};
+
+	let updateLocale = require('dayjs/plugin/updateLocale');
+	dayjs.extend(updateLocale);
+	dayjs.updateLocale('pt-br', {
+		weekdays: ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'],
+	});
+
+	setPercentage((dailyHabits.filter((habit) => habit.done).length / dailyHabits.length) * 100);
 
 	useEffect(() => {
 		axios
 			.get('https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/habits/today', config)
 			.then((response) => {
 				setDailyHabits(response.data);
-			});
+			})
+			.catch(() => navigate('/'));
 	}, []);
 
-	setPercentage((dailyHabits.filter((habit) => habit.done).length / dailyHabits.length) * 100);
+	const checkHabitAsDone = (dailyHabit) => {
+		const API = `https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/habits/${dailyHabit.id}/check`;
 
-	const unmarkHabitAsDone = (dailyHabit) => {
-		axios
-			.post(
-				`https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/habits/${dailyHabit.id}/uncheck`,
-				null,
-				config
-			)
-			.then(() => {
-				dailyHabit.done = false;
-				if (dailyHabit.highestSequence === dailyHabit.currentSequence) dailyHabit.highestSequence--;
-				dailyHabit.currentSequence--;
-				setDailyHabits(
-					[...dailyHabits.filter((habit) => habit.id !== dailyHabit.id), dailyHabit].sort(
-						(a, b) => a.id - b.id
-					)
-				);
-			});
+		axios.post(API, null, config).then(() => {
+			dailyHabit.done = !dailyHabit.done;
+			if (dailyHabit.highestSequence === dailyHabit.currentSequence) dailyHabit.highestSequence++;
+			dailyHabit.currentSequence++;
+			setDailyHabits(
+				[...dailyHabits.filter((habit) => habit.id !== dailyHabit.id), dailyHabit].sort((a, b) => a.id - b.id)
+			);
+		});
 	};
 
-	const markHabitAsDone = (dailyHabit) => {
-		axios
-			.post(
-				`https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/habits/${dailyHabit.id}/check`,
-				null,
-				config
-			)
-			.then(() => {
-				dailyHabit.done = true;
-				dailyHabit.currentSequence++;
-				if (dailyHabit.highestSequence < dailyHabit.currentSequence)
-					dailyHabit.highestSequence = dailyHabit.currentSequence;
-				setDailyHabits(
-					[...dailyHabits.filter((habit) => habit.id !== dailyHabit.id), dailyHabit].sort(
-						(a, b) => a.id - b.id
-					)
-				);
-			});
+	const uncheckHabitAsDone = (dailyHabit) => {
+		const API = `https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/habits/${dailyHabit.id}/uncheck`;
+
+		axios.post(API, null, config).then(() => {
+			dailyHabit.done = !dailyHabit.done;
+			if (dailyHabit.highestSequence === dailyHabit.currentSequence) dailyHabit.highestSequence--;
+			dailyHabit.currentSequence--;
+			setDailyHabits(
+				[...dailyHabits.filter((habit) => habit.id !== dailyHabit.id), dailyHabit].sort((a, b) => a.id - b.id)
+			);
+		});
 	};
 
 	return (
 		<Container>
 			<Header />
 			<SubHeader>
-				<Title>{`${dayjs().format('dddd')}, ${dayjs().format('DD/MM')}`}</Title>
-				<Percentage color={dailyHabits.filter((habit) => habit.done).length === 0 ? '#bababa' : '#8fc549'}>
-					{dailyHabits.length && dailyHabits.filter((habit) => habit.done).length !== 0
-						? `${percentage}% dos hábitos concluídos`
+				<Title>{`${dayjs().locale('pt-br').format('dddd')}, ${dayjs().format('DD/MM')}`}</Title>
+				<Percentage color={percentage === 0 ? '#bababa' : '#8fc549'}>
+					{dailyHabits.length && percentage !== 0
+						? `${percentage.toFixed(0)}% dos hábitos concluídos`
 						: 'Nenhum hábito concluído ainda'}
 				</Percentage>
 			</SubHeader>
@@ -89,20 +87,20 @@ function TodayPage() {
 								<Text>
 									<h2>{habit.name}</h2>
 									<div>
-										{'Sequência atual:'}
-										<NumberOfDays color={habit.done ? '#8fc549' : '#666666'}>{` ${
+										{`Sequência atual:\u00A0`}
+										<NumberOfDays color={habit.done ? '#8fc549' : '#666666'}>{`${
 											habit.currentSequence
 										} ${habit.currentSequence === 1 ? 'dia' : 'dias'}`}</NumberOfDays>
 									</div>
 									<div>
-										{'Seu recorde:'}
+										{`Seu recorde:\u00A0`}
 										<NumberOfDays
 											color={
 												habit.done && habit.currentSequence === habit.highestSequence
 													? '#8fc549'
 													: '#666666'
 											}
-										>{` ${habit.highestSequence} ${
+										>{`${habit.highestSequence} ${
 											habit.highestSequence === 1 ? 'dia' : 'dias'
 										}`}</NumberOfDays>
 									</div>
@@ -115,8 +113,8 @@ function TodayPage() {
 										<BsCheckLg
 											onClick={
 												habit.done
-													? () => unmarkHabitAsDone(habit)
-													: () => markHabitAsDone(habit)
+													? () => uncheckHabitAsDone(habit)
+													: () => checkHabitAsDone(habit)
 											}
 										/>
 									</IconContext.Provider>

@@ -4,12 +4,12 @@ import styled from 'styled-components';
 import UserContext from '../contexts/UserContext';
 
 function Header() {
-	const { user } = useContext(UserContext);
+	const { userInfos } = useContext(UserContext);
 
 	return (
 		<HeaderContainer>
 			<Title>{'TrackIt'}</Title>
-			<UserImg src={user} alt='' />
+			<UserImg src={userInfos.image} alt='' />
 		</HeaderContainer>
 	);
 }

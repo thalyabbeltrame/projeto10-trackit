@@ -1,20 +1,28 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { useState, useContext } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import styled from 'styled-components';
 import axios from 'axios';
 import logo from '../assets/images/logo.png';
-import SignUpPage from './SignUpPage';
 import { ThreeDots } from 'react-loader-spinner';
 
-import TokenContext from '../contexts/TokenContext';
+import SignUpPage from './SignUpPage';
+
 import UserContext from '../contexts/UserContext';
 
-function LoginPage() {
+function SignInPage() {
 	const navigate = useNavigate();
 	const [loginInfos, setLoginInfos] = useState({ email: '', password: '' });
 	const [isLoading, setIsLoading] = useState(false);
-	const { setToken } = useContext(TokenContext);
-	const { setUser } = useContext(UserContext);
+	const { setUserInfos } = useContext(UserContext);
+
+	useEffect(() => {
+		let userInfos = localStorage.getItem('userInfos');
+		if (userInfos !== null) {
+			userInfos = JSON.parse(userInfos);
+			setUserInfos({ image: userInfos.image, token: userInfos.token });
+			navigate('/hoje');
+		}
+	}, []);
 
 	const login = (event) => {
 		event.preventDefault();
@@ -22,8 +30,8 @@ function LoginPage() {
 		axios
 			.post('https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/auth/login', loginInfos)
 			.then((response) => {
-				setToken(response.data.token);
-				setUser(response.data.image);
+				const allUserInfos = JSON.stringify(response.data);
+				localStorage.setItem('userInfos', allUserInfos);
 				navigate('/hoje');
 			})
 			.catch((error) => {
@@ -136,4 +144,4 @@ const SignUp = styled.p`
 	cursor: pointer;
 `;
 
-export default LoginPage;
+export default SignInPage;
