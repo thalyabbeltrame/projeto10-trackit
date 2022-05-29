@@ -27,8 +27,11 @@ function SignInPage() {
 	const login = (event) => {
 		event.preventDefault();
 		setIsLoading(true);
+
+		const API = 'https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/auth/login';
+
 		axios
-			.post('https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/auth/login', loginInfos)
+			.post(API, loginInfos)
 			.then((response) => {
 				const allUserInfos = JSON.stringify(response.data);
 				localStorage.setItem('userInfos', allUserInfos);

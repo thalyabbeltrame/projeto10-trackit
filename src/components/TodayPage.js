@@ -74,7 +74,7 @@ function TodayPage() {
 			<Header />
 			<SubHeader>
 				<Title>{`${dayjs().locale('pt-br').format('dddd')}, ${dayjs().format('DD/MM')}`}</Title>
-				<Percentage color={percentage === 0 ? '#bababa' : '#8fc549'}>
+				<Percentage color={dailyHabits.length && percentage !== 0 ? '#8fc549' : '#bababa'}>
 					{dailyHabits.length && percentage !== 0
 						? `${percentage.toFixed(0)}% dos hábitos concluídos`
 						: 'Nenhum hábito concluído ainda'}

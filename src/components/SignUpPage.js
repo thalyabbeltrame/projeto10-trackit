@@ -21,12 +21,14 @@ function SignUpPage() {
 		event.preventDefault();
 		if (isImageValid(signUpInfos.image)) {
 			setIsLoading(true);
+
+			const API = 'https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/auth/sign-up';
 			axios
-				.post('https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/auth/sign-up', signUpInfos)
+				.post(API, signUpInfos)
 				.then(() => navigate('/'))
 				.catch(() => {
 					setIsLoading(false);
-					alert('Aconteceu um erro inesperado e seus dados não foram enviados com sucesso!');
+					alert('Aconteceu um erro inesperado e seus dados não foram enviados!');
 				});
 		} else {
 			alert('URL da imagem inválida. Por favor, insira outra!');

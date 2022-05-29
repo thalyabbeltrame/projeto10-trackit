@@ -25,13 +25,13 @@ function HabitsPage() {
 	const { setPercentage } = useContext(PercentageContext);
 
 	const daysOfTheWeek = [
-		{ simbol: 'D', index: 0 },
-		{ simbol: 'S', index: 1 },
-		{ simbol: 'T', index: 2 },
-		{ simbol: 'Q', index: 3 },
-		{ simbol: 'Q', index: 4 },
-		{ simbol: 'S', index: 5 },
-		{ simbol: 'S', index: 6 },
+		{ simbol: 'D' },
+		{ simbol: 'S' },
+		{ simbol: 'T' },
+		{ simbol: 'Q' },
+		{ simbol: 'Q' },
+		{ simbol: 'S' },
+		{ simbol: 'S' },
 	];
 
 	const weekdayNumber = dayjs().locale('pt-br').format('d');
@@ -66,36 +66,44 @@ function HabitsPage() {
 		if (newHabit.name.trim() === '' || newHabit.days.length === 0) return;
 		setIsLoading(true);
 
+		const API = 'https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/habits';
 		const body = {
 			name: newHabit.name,
 			days: newHabit.days.map((day) => day.index),
 		};
 
-		const API = 'https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/habits';
+		axios
+			.post(API, body, config)
+			.then((response) => {
+				setHabits([...habits, response.data]);
+				setIsLoading(false);
+				setIsHabitCreationBoxOpen(false);
+				setNewHabit({ name: '', days: [] });
 
-		axios.post(API, body, config).then((response) => {
-			setHabits([...habits, response.data]);
-			setIsLoading(false);
-			setIsHabitCreationBoxOpen(false);
-			setNewHabit({ name: '', days: [] });
-
-			const isNewDailyHabit = newHabit.days.some((day) => day.index === Number(weekdayNumber));
-			if (isNewDailyHabit) setDailyHabits([...dailyHabits, response.data]);
-
-			setPercentage(([...dailyHabits.filter((dailyHabit) => dailyHabit.done)].length / dailyHabits.length) * 100);
-		});
+				const isNewDailyHabit = newHabit.days.some((day) => day.index === Number(weekdayNumber));
+				const updatedDailyHabit = isNewDailyHabit ? [...dailyHabits, response.data] : [...dailyHabits];
+				setDailyHabits(updatedDailyHabit);
+				setPercentage(
+					(updatedDailyHabit.filter((dailyHabit) => dailyHabit.done).length / updatedDailyHabit.length) * 100
+				);
+			})
+			.catch(() => alert('Falha ao salvar o hábito!'));
 	};
 
 	const deleteHabit = (habitId) => {
+		const API = `https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/habits/${habitId}`;
+
 		axios
-			.delete(`https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/habits/${habitId}`, config)
+			.delete(API, config)
 			.then(() => {
 				setHabits(habits.filter((habit) => habit.id !== habitId));
-				setDailyHabits([...dailyHabits.filter((dailyHabit) => dailyHabit.id !== habitId)]);
+				const updatedDailyHabit = dailyHabits.filter((dailyHabit) => dailyHabit.id !== habitId);
+				setDailyHabits(updatedDailyHabit);
 				setPercentage(
-					([...dailyHabits.filter((dailyHabit) => dailyHabit.done)].length / dailyHabits.length) * 100
+					(updatedDailyHabit.filter((dailyHabit) => dailyHabit.done).length / updatedDailyHabit.length) * 100
 				);
-			});
+			})
+			.catch(() => alert('Falha ao deletar o hábito!'));
 	};
 
 	return (
@@ -120,15 +128,15 @@ function HabitsPage() {
 							color={isLoading ? '#b3b3b3' : '#dbdbdb'}
 						/>
 						<Days>
-							{daysOfTheWeek.map((day) => (
+							{daysOfTheWeek.map((day, index) => (
 								<Day
-									key={day.index}
-									onClick={() => selectUnselectDay(day.index)}
+									key={index}
+									onClick={() => selectUnselectDay(index)}
 									disabled={isLoading}
 									background={
-										newHabit.days.some((d) => d.index === day.index) ? '#cfcfcf' : '#ffffff'
+										newHabit.days.some((d) => d.index === index) ? '#cfcfcf' : '#ffffff'
 									}
-									color={newHabit.days.some((d) => d.index === day.index) ? '#ffffff' : '#dbdbdb'}
+									color={newHabit.days.some((d) => d.index === index) ? '#ffffff' : '#dbdbdb'}
 								>
 									{day.simbol}
 								</Day>
@@ -166,11 +174,11 @@ function HabitsPage() {
 								<IoTrashOutline onClick={() => deleteHabit(habit.id)} />
 							</IconContext.Provider>
 							<Days>
-								{daysOfTheWeek.map((day) => (
+								{daysOfTheWeek.map((day, index) => (
 									<Day
-										key={day.index}
-										background={habit.days.some((d) => d === day.index) ? '#cfcfcf' : '#ffffff'}
-										color={habit.days.some((d) => d === day.index) ? '#ffffff' : '#dbdbdb'}
+										key={index}
+										background={habit.days.some((d) => d === index) ? '#cfcfcf' : '#ffffff'}
+										color={habit.days.some((d) => d === index) ? '#ffffff' : '#dbdbdb'}
 									>
 										{day.simbol}
 									</Day>
