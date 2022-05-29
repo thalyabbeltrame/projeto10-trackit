@@ -93,17 +93,21 @@ function HabitsPage() {
 	const deleteHabit = (habitId) => {
 		const API = `https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/habits/${habitId}`;
 
-		axios
-			.delete(API, config)
-			.then(() => {
-				setHabits(habits.filter((habit) => habit.id !== habitId));
-				const updatedDailyHabit = dailyHabits.filter((dailyHabit) => dailyHabit.id !== habitId);
-				setDailyHabits(updatedDailyHabit);
-				setPercentage(
-					(updatedDailyHabit.filter((dailyHabit) => dailyHabit.done).length / updatedDailyHabit.length) * 100
-				);
-			})
-			.catch(() => alert('Falha ao deletar o hábito!'));
+		// eslint-disable-next-line no-restricted-globals
+		if (confirm('Você realmente deseja deletar esse hábito?')) {
+			axios
+				.delete(API, config)
+				.then(() => {
+					setHabits(habits.filter((habit) => habit.id !== habitId));
+					const updatedDailyHabit = dailyHabits.filter((dailyHabit) => dailyHabit.id !== habitId);
+					setDailyHabits(updatedDailyHabit);
+					setPercentage(
+						(updatedDailyHabit.filter((dailyHabit) => dailyHabit.done).length / updatedDailyHabit.length) *
+							100
+					);
+				})
+				.catch(() => alert('Falha ao deletar o hábito!'));
+		}
 	};
 
 	return (
@@ -133,9 +137,7 @@ function HabitsPage() {
 									key={index}
 									onClick={() => selectUnselectDay(index)}
 									disabled={isLoading}
-									background={
-										newHabit.days.some((d) => d.index === index) ? '#cfcfcf' : '#ffffff'
-									}
+									background={newHabit.days.some((d) => d.index === index) ? '#cfcfcf' : '#ffffff'}
 									color={newHabit.days.some((d) => d.index === index) ? '#ffffff' : '#dbdbdb'}
 								>
 									{day.simbol}
@@ -292,7 +294,7 @@ const Habit = styled.div`
 	flex-direction: column;
 	align-items: flex-start;
 	justify-content: space-between;
-	height: 91px;
+	height: auto;
 	background: #ffffff;
 	border-radius: 5px;
 	margin-bottom: 10px;
@@ -300,9 +302,11 @@ const Habit = styled.div`
 	position: relative;
 
 	p {
+		width: calc(100% - 20px);
 		font-size: 19.976px;
 		line-height: 25px;
 		color: #666666;
+		margin-bottom: 10px;
 	}
 
 	.icon {

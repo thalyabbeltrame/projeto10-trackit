@@ -142,6 +142,10 @@ const Input = styled.input`
 	&:focus {
 		outline: none;
 	}
+
+	&::placeholder {
+		color: ${(props) => props.color};
+	}
 `;
 
 const Button = styled.button`
