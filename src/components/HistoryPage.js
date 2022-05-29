@@ -1,4 +1,5 @@
 import { useEffect, useState, useContext } from 'react';
+import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import axios from 'axios';
 import Calendar from 'react-calendar';
@@ -11,6 +12,7 @@ import Header from './Header';
 import Footer from './Footer';
 
 function HistoryPage() {
+	const navigate = useNavigate();
 	const { userInfos } = useContext(UserContext);
 	const [history, setHistory] = useState([]);
 
@@ -23,13 +25,17 @@ function HistoryPage() {
 	useEffect(() => {
 		const URL = 'https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/habits/history/daily';
 
-		axios.get(URL, config).then((response) => {
-			setHistory(response.data);
-		});
-	}, [history]);
+		axios
+			.get(URL, config)
+			.then((response) => {
+				setHistory(response.data);
+			})
+			.catch(() => navigate('/'));
+	}, []);
 
 	const setTileStyle = (date) => {
 		const localeDate = date.toLocaleDateString('pt-br');
+		if (localeDate === dayjs().format('DD/MM/YYYY')) return '';
 		const habitsDay = history.filter((value) => value.day === localeDate);
 		if (habitsDay.length) {
 			if (habitsDay[0].habits.every((habit) => habit.done)) return 'done';
@@ -97,7 +103,7 @@ const Content = styled.div`
 	}
 
 	p {
-		font-size: 16px;
+		font-size: 14px;
 	}
 
 	.calendar-tile {
@@ -107,14 +113,15 @@ const Content = styled.div`
 		font-size: 16px;
 		height: 40px;
 		width: 40px;
-		border-radius: 100%;
 
 		&.done {
-			background-color: green;
+			background-color: #8cc654;
+			border-radius: 50%;
 		}
 
 		&.not-done {
-			background-color: red;
+			background-color: #ea5766;
+			border-radius: 50%;
 		}
 	}
 `;
