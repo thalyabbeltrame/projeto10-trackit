@@ -33,7 +33,7 @@ function HistoryPage() {
 			.catch(() => navigate('/'));
 	}, []);
 
-	const setTileStyle = (date) => {
+	const setDayStyle = (date) => {
 		const localeDate = date.toLocaleDateString('pt-br');
 		if (localeDate === dayjs().format('DD/MM/YYYY')) return '';
 		const habitsDay = history.filter((value) => value.day === localeDate);
@@ -51,10 +51,10 @@ function HistoryPage() {
 			<SubHeader>Histórico</SubHeader>
 			<Content>
 				<Calendar
-					className='calendar'
 					locale='pt-br'
+					calendarType='US'
 					formatDay={(locale, date) => <p>{dayjs(date).format('DD')}</p>}
-					tileClassName={({ date }) => `calendar-tile ${setTileStyle(date)}`}
+					tileClassName={({ date }) => `${setDayStyle(date)}`}
 				/>
 			</Content>
 			<Footer />
@@ -90,23 +90,41 @@ const Content = styled.div`
 	align-items: center;
 	width: 100%;
 	padding: 0 18px;
-	margin-bottom: 70px;
+	margin-bottom: 105px;
 	font-size: 17.976px;
 	line-height: 22px;
 	color: #666666;
 
-	.calendar {
+	.react-calendar {
 		border: none;
 		border-radius: 10px;
 		width: 100%;
 		border-radius: 10px;
+		overflow: hidden;
+	}
+
+	.react-calendar__navigation {
+		background-color: #52b6ff;
+		min-height: 45px;
+		height: auto;
+		button {
+			color: white;
+		}
+		button:enabled:hover,
+		button:enabled:focus {
+			background-color: #52b6ff;
+		}
+		.react-calendar__navigation__label {
+			font-size: 18px;
+			color: #ffffff;
+		}
 	}
 
 	p {
 		font-size: 14px;
 	}
 
-	.calendar-tile {
+	.react-calendar__tile {
 		display: flex;
 		justify-content: center;
 		align-items: center;

@@ -208,7 +208,7 @@ const Content = styled.div`
 	flex-direction: column;
 	width: 100%;
 	padding: 0 18px;
-	margin-bottom: 70px;
+	margin-bottom: 105px;
 `;
 
 const HabitCreationBox = styled.div`
@@ -307,6 +307,7 @@ const Habit = styled.div`
 		line-height: 25px;
 		color: #666666;
 		margin-bottom: 10px;
+		word-wrap: break-word;
 	}
 
 	.icon {

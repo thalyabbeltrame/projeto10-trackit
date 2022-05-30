@@ -141,7 +141,7 @@ const Content = styled.div`
 	flex-direction: column;
 	width: 100%;
 	padding: 0 18px;
-	margin-bottom: 70px;
+	margin-bottom: 105px;
 `;
 
 const DailyHabit = styled.div`
@@ -162,11 +162,14 @@ const Text = styled.div`
 	flex-direction: column;
 	width: calc(100% - 79px);
 	color: #666666;
+	word-wrap: break-word;
 
 	h2 {
+		width: 100%;
 		font-size: 19.976px;
 		line-height: 25px;
 		margin-bottom: 8px;
+		word-wrap: break-word;
 	}
 
 	div {
