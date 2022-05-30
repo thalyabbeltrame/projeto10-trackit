@@ -58,7 +58,7 @@ function SignUpPage() {
 					readOnly={isLoading}
 					required
 					background={isLoading ? '#f2f2f2' : '#ffffff'}
-					color={isLoading ? '#afafaf' : '#dbdbdb'}
+					color={isLoading ? '#afafaf' : '#666666'}
 				/>
 				<Input
 					type='password'
@@ -70,7 +70,7 @@ function SignUpPage() {
 					readOnly={isLoading}
 					required
 					background={isLoading ? '#f2f2f2' : '#ffffff'}
-					color={isLoading ? '#afafaf' : '#dbdbdb'}
+					color={isLoading ? '#afafaf' : '#666666'}
 				/>
 				<Input
 					type='text'
@@ -81,7 +81,7 @@ function SignUpPage() {
 					readOnly={isLoading}
 					required
 					background={isLoading ? '#f2f2f2' : '#ffffff'}
-					color={isLoading ? '#afafaf' : '#dbdbdb'}
+					color={isLoading ? '#afafaf' : '#666666'}
 				/>
 				<Input
 					type='text'
@@ -92,7 +92,7 @@ function SignUpPage() {
 					readOnly={isLoading}
 					required
 					background={isLoading ? '#f2f2f2' : '#ffffff'}
-					color={isLoading ? '#afafaf' : '#dbdbdb'}
+					color={isLoading ? '#afafaf' : '#666666'}
 				/>
 				<Button type='submit' disabled={isLoading}>
 					{isLoading ? <ThreeDots color='#ffffff' height={60} width={60} /> : 'Cadastrar'}
@@ -144,7 +144,7 @@ const Input = styled.input`
 	}
 
 	&::placeholder {
-		color: ${(props) => props.color};
+		color: #dbdbdb;
 	}
 `;
 

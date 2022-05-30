@@ -87,14 +87,17 @@ function HabitsPage() {
 					(updatedDailyHabit.filter((dailyHabit) => dailyHabit.done).length / updatedDailyHabit.length) * 100
 				);
 			})
-			.catch(() => alert('Falha ao salvar o hábito!'));
+			.catch(() => {
+				setIsLoading(false);
+				alert('Falha ao salvar o hábito!');
+			});
 	};
 
-	const deleteHabit = (habitId) => {
+	const deleteHabit = (habitId, habitName) => {
 		const API = `https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/habits/${habitId}`;
 
 		// eslint-disable-next-line no-restricted-globals
-		if (confirm('Você realmente deseja deletar esse hábito?')) {
+		if (confirm(`Você realmente deseja deletar o hábito '${habitName}'?`)) {
 			axios
 				.delete(API, config)
 				.then(() => {
@@ -129,7 +132,7 @@ function HabitsPage() {
 							readOnly={isLoading}
 							required
 							background={isLoading ? '#f2f2f2' : '#ffffff'}
-							color={isLoading ? '#b3b3b3' : '#dbdbdb'}
+							color={isLoading ? '#b3b3b3' : '#666666'}
 						/>
 						<Days>
 							{daysOfTheWeek.map((day, index) => (
@@ -173,7 +176,7 @@ function HabitsPage() {
 						<Habit key={habit.id}>
 							<p>{habit.name}</p>
 							<IconContext.Provider value={{ className: 'icon', color: '#666666', size: '20px' }}>
-								<IoTrashOutline onClick={() => deleteHabit(habit.id)} />
+								<IoTrashOutline onClick={() => deleteHabit(habit.id, habit.name)} />
 							</IconContext.Provider>
 							<Days>
 								{daysOfTheWeek.map((day, index) => (

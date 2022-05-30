@@ -5,6 +5,8 @@ import axios from 'axios';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import dayjs from 'dayjs';
+import { IconContext } from 'react-icons/lib';
+import { BsFillXCircleFill, BsCheckCircleFill } from 'react-icons/bs';
 
 import UserContext from '../contexts/UserContext';
 
@@ -15,6 +17,7 @@ function HistoryPage() {
 	const navigate = useNavigate();
 	const { userInfos } = useContext(UserContext);
 	const [history, setHistory] = useState([]);
+	const [selectedDate, setSelectedDate] = useState('');
 
 	const config = {
 		headers: {
@@ -55,7 +58,31 @@ function HistoryPage() {
 					calendarType='US'
 					formatDay={(locale, date) => <p>{dayjs(date).format('DD')}</p>}
 					tileClassName={({ date }) => `${setDayStyle(date)}`}
+					onClickDay={(date) => setSelectedDate(date.toLocaleDateString('pt-br'))}
 				/>
+				<Habits>
+					{selectedDate !== '' && history.filter((el) => el.day === selectedDate).length ? (
+						<h2>{`Lista de hábitos - ${selectedDate}`}</h2>
+					) : null}
+					{selectedDate !== '' && history.filter((el) => el.day === selectedDate).length
+						? history
+								.filter((el) => el.day === selectedDate)[0]
+								.habits.map((habit) => (
+									<Habit key={habit.id}>
+										{habit.done ? (
+											<IconContext.Provider value={{ color: '#8cc654' }}>
+												<BsCheckCircleFill />
+											</IconContext.Provider>
+										) : (
+											<IconContext.Provider value={{ color: '#ea5766' }}>
+												<BsFillXCircleFill />
+											</IconContext.Provider>
+										)}
+										<p>{habit.name}</p>
+									</Habit>
+								))
+						: null}
+				</Habits>
 			</Content>
 			<Footer />
 		</Container>
@@ -100,20 +127,22 @@ const Content = styled.div`
 		border-radius: 10px;
 		width: 100%;
 		border-radius: 10px;
-		overflow: hidden;
 	}
 
 	.react-calendar__navigation {
 		background-color: #52b6ff;
 		min-height: 45px;
 		height: auto;
+
 		button {
 			color: white;
 		}
+
 		button:enabled:hover,
 		button:enabled:focus {
 			background-color: #52b6ff;
 		}
+
 		.react-calendar__navigation__label {
 			font-size: 18px;
 			color: #ffffff;
@@ -141,6 +170,32 @@ const Content = styled.div`
 			background-color: #ea5766;
 			border-radius: 50%;
 		}
+	}
+`;
+
+const Habits = styled.div`
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	width: 100%;
+	margin-top: 20px;
+
+	h2 {
+		margin-bottom: 5px;
+	}
+`;
+
+const Habit = styled.div`
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	width: 100%;
+	padding: 0 10px;
+	margin-bottom: 5px;
+	font-size: 16px;
+
+	p {
+		margin-left: 5px;
 	}
 `;
 

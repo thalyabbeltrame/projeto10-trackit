@@ -39,7 +39,7 @@ function SignInPage() {
 			})
 			.catch((error) => {
 				setIsLoading(false);
-				alert(`${error.response.data.message}`);
+				alert('Usuário e/ou senha inválidos!');
 			});
 	};
 
@@ -60,7 +60,7 @@ function SignInPage() {
 					readOnly={isLoading}
 					required
 					background={isLoading ? '#f2f2f2' : '#ffffff'}
-					color={isLoading ? '#afafaf' : '#dbdbdb'}
+					color={isLoading ? '#afafaf' : '#666666'}
 				/>
 				<Input
 					type='password'
@@ -72,7 +72,7 @@ function SignInPage() {
 					readOnly={isLoading}
 					required
 					background={isLoading ? '#f2f2f2' : '#ffffff'}
-					color={isLoading ? '#afafaf' : '#dbdbdb'}
+					color={isLoading ? '#afafaf' : '#666666'}
 				/>
 				<Button type='submit' disabled={isLoading}>
 					{isLoading ? <ThreeDots color='#ffffff' height={60} width={60} /> : 'Entrar'}
@@ -124,7 +124,7 @@ const Input = styled.input`
 	}
 
 	&::placeholder {
-		color: ${(props) => props.color};
+		color: #dbdbdb;
 	}
 `;
 
